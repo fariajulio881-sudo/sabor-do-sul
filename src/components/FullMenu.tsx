@@ -117,11 +117,13 @@ export default function FullMenu() {
 
               {/* Conteúdo */}
               <div className="min-w-0 flex-1">
-                <div className="flex items-baseline gap-2">
-                  <h3
-                    className="min-w-0 w-auto flex-1 font-display text-lg leading-snug font-semibold whitespace-normal break-words text-cream-50 transition-colors duration-300 group-hover:text-gold-300 sm:text-xl"
-                    style={{ writingMode: "horizontal-tb" }}
-                  >
+                {/* CAUSA RAIZ corrigida: o título NÃO pode ter flex-basis 0
+                    (flex-1) nem min-width: 0 — isso deixava o flexbox
+                    espremê-lo até quebrar letra por letra.
+                    flex-[1_1_auto] + min-width padrão (auto) = o título
+                    cresce, mas nunca encolhe abaixo da maior palavra. */}
+                <div className="flex min-w-0 items-baseline gap-2">
+                  <h3 className="w-auto flex-[1_1_auto] font-display text-lg leading-snug font-semibold whitespace-normal text-cream-50 transition-colors duration-300 group-hover:text-gold-300 sm:text-xl">
                     {item.name}
                   </h3>
                   {item.tag && (
