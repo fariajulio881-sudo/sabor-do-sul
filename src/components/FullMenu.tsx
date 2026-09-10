@@ -118,7 +118,10 @@ export default function FullMenu() {
               {/* Conteúdo */}
               <div className="min-w-0 flex-1">
                 <div className="flex items-baseline gap-2">
-                  <h3 className="min-w-0 font-display text-lg leading-snug font-semibold text-cream-50 transition-colors duration-300 group-hover:text-gold-300 sm:text-xl">
+                  <h3
+                    className="min-w-0 w-auto flex-1 font-display text-lg leading-snug font-semibold whitespace-normal break-words text-cream-50 transition-colors duration-300 group-hover:text-gold-300 sm:text-xl"
+                    style={{ writingMode: "horizontal-tb" }}
+                  >
                     {item.name}
                   </h3>
                   {item.tag && (
@@ -179,7 +182,7 @@ export default function FullMenu() {
         </div>
 
         <Reveal delay={150}>
-          <p className="mt-14 text-center text-sm text-cream-200/55">
+          <p className="mt-14 pb-20 text-center text-sm text-cream-200/55 sm:pb-8">
             Não achou seu sabor favorito? A lista completa com promoções do dia está sempre no WhatsApp —{" "}
             <a
               href={waLink("Olá! Quero ver o cardápio completo do Sabor do Sul 🍕")}

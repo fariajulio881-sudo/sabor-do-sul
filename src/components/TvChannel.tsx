@@ -333,6 +333,24 @@ const FILMS: Film[] = [
   },
 ];
 
+/* ------------------------------------------------------------------ */
+/* Fontes alternativas do Internet Archive — o navegador tenta cada    */
+/* <source> na ordem e pula automaticamente o que falhar:              */
+/*   1. arquivo original (melhor qualidade)                            */
+/*   2. derivativo 512kb (menor e mais rápido de abrir)                */
+/*   3. derivativo H.264 IA (re-encode do Archive, abre instantâneo)   */
+/* ------------------------------------------------------------------ */
+function filmSources(film: Film): string[] {
+  const src = film.src;
+  const idx = src.lastIndexOf("/");
+  const base = src.slice(0, idx + 1);
+  const file = src.slice(idx + 1);
+  const dot = file.lastIndexOf(".");
+  const stem = dot > 0 ? file.slice(0, dot) : file;
+  const ext = dot > 0 ? file.slice(dot) : ".mp4";
+  return [src, `${base}${stem}_512kb${ext}`, `${base}${stem}.ia${ext}`];
+}
+
 const GENRES: ("Todos" | Genre)[] = ["Todos", "Ação", "Aventura", "Ficção", "Terror", "Comédia", "Drama", "Faroeste"];
 
 const GENRE_ACCENT: Record<Genre, string> = {
@@ -443,6 +461,12 @@ export default function TvChannel() {
   const [standbyIdx, setStandbyIdx] = useState(0);
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  /* ------------------------- player de filmes ------------------------- */
+  const [filmPhase, setFilmPhase] = useState<"loading" | "playing" | "error">("loading");
+  const [fastMode, setFastMode] = useState(false);
+  const phaseRef = useRef<"loading" | "playing" | "error">("loading");
+  const slowTimerRef = useRef(0);
+
   /* para a reprodução quando o player é fechado */
   useEffect(() => {
     if (!open) {
@@ -450,6 +474,24 @@ export default function TvChannel() {
       setCurrent(null);
     }
   }, [open]);
+
+  /* reinicia o estado do player a cada filme escolhido */
+  useEffect(() => {
+    window.clearTimeout(slowTimerRef.current);
+    setFilmPhase("loading");
+    phaseRef.current = "loading";
+    setFastMode(false);
+    if (open && current) {
+      // se o arquivo grande não começar em 12s, troca para a versão leve
+      slowTimerRef.current = window.setTimeout(() => {
+        if (phaseRef.current === "loading") {
+          setFastMode((f) => !f);
+        }
+      }, 12000);
+    }
+    return () => window.clearTimeout(slowTimerRef.current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, current?.id]);
 
   /* vitrine de capas girando enquanto a TV está em stand-by */
   useEffect(() => {
@@ -547,17 +589,66 @@ export default function TvChannel() {
                 {/* tela 16:9 */}
                 <div className="relative aspect-video overflow-hidden rounded-2xl bg-forest-950">
                   {open && current ? (
-                    <video
-                      key={current.id}
-                      ref={videoRef}
-                      src={current.src}
-                      poster={current.poster}
-                      autoPlay
-                      controls
-                      playsInline
-                      preload="none"
-                      className="absolute inset-0 h-full w-full object-contain"
-                    />
+                    <div className="absolute inset-0">
+                      <video
+                        key={`${current.id}-${fastMode ? "fast" : "full"}`}
+                        ref={videoRef}
+                        poster={current.poster}
+                        autoPlay
+                        controls
+                        playsInline
+                        preload="auto"
+                        onPlaying={() => {
+                          setFilmPhase("playing");
+                          phaseRef.current = "playing";
+                        }}
+                        onError={() => {
+                          setFilmPhase("error");
+                          phaseRef.current = "error";
+                        }}
+                        className="absolute inset-0 h-full w-full object-contain"
+                      >
+                        {(() => {
+                          const sources = filmSources(current);
+                          const order = fastMode ? [1, 0, 2] : [0, 1, 2];
+                          return order.map((srcIdx) => (
+                            <source key={srcIdx} src={sources[srcIdx]} onError={() => undefined} />
+                          ));
+                        })()}
+                      </video>
+
+                      {/* feedback enquanto o filme não começa */}
+                      {filmPhase !== "playing" && (
+                        <div className="pointer-events-none absolute inset-0 grid place-items-center bg-forest-950/85">
+                          <div className="px-4 text-center">
+                            {filmPhase === "error" ? (
+                              <>
+                                <p className="text-2xl" aria-hidden="true">📡</p>
+                                <p className="mt-2 text-sm font-bold text-cream-100">
+                                  Filme indisponível no acervo agora.
+                                </p>
+                                <p className="mt-1 text-xs text-cream-200/60">
+                                  Tente outro título da programação.
+                                </p>
+                              </>
+                            ) : (
+                              <>
+                                <span
+                                  className="mx-auto block h-8 w-8 animate-spin rounded-full border-2 border-cream-100/20 border-t-gold-400"
+                                  aria-hidden="true"
+                                />
+                                <p className="mt-3 text-sm font-bold text-cream-100">Preparando a sessão…</p>
+                                {fastMode && (
+                                  <p className="mt-1 text-xs text-cream-200/60">
+                                    Ajustando para a versão leve — começa em segundos.
+                                  </p>
+                                )}
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   ) : (
                     /* modo stand-by: vitrine de capas + scanlines */
                     <div className="absolute inset-0">
