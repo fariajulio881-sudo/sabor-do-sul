@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600">
+  <defs>
+    <radialGradient id="doom" cx="0.5" cy="0.42" r="0.72">
+      <stop offset="0" stop-color="#3a0f08"/>
+      <stop offset="0.55" stop-color="#1c0d08"/>
+      <stop offset="1" stop-color="#0c0a08"/>
+    </radialGradient>
+    <filter id="eyeGlow"><feGaussianBlur stdDeviation="6"/></filter>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.08"/></feComponentTransfer>
+    </filter>
+    <radialGradient id="vig" cx="0.5" cy="0.5" r="0.75">
+      <stop offset="0.5" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0.65"/>
+    </radialGradient>
+  </defs>
+  <rect width="400" height="600" fill="url(#doom)"/>
+  <g fill="#0a0d0c">
+    <rect x="0" y="430" width="400" height="20"/>
+    <rect x="8" y="420" width="34" height="80"/>
+    <rect x="56" y="400" width="28" height="100"/>
+    <rect x="98" y="425" width="42" height="75"/>
+    <rect x="154" y="395" width="30" height="105"/>
+    <rect x="198" y="430" width="36" height="70"/>
+    <rect x="248" y="405" width="30" height="95"/>
+    <rect x="292" y="428" width="44" height="72"/>
+    <rect x="350" y="412" width="50" height="88"/>
+  </g>
+  <g fill="#0c0a08">
+    <path d="M200,110 C100,112 62,190 58,268 q-2,64 34,66 q4,0 4,-66 q34,2 36,66 q22,-2 22,-66 q52,0 56,66 q30,-4 28,-68 q-8,-80 -106,-78 z"/>
+    <path d="M138,320 h40 l-6,44 h-28 z"/>
+    <path d="M222,320 h40 l6,44 h-30 z"/>
+  </g>
+  <g fill="#f6cf8b">
+    <ellipse cx="168" cy="232" rx="14" ry="6"/>
+    <ellipse cx="232" cy="232" rx="14" ry="6"/>
+  </g>
+  <g fill="#e2703a" opacity="0.5" filter="url(#eyeGlow)">
+    <ellipse cx="168" cy="232" rx="20" ry="9"/>
+    <ellipse cx="232" cy="232" rx="20" ry="9"/>
+  </g>
+  <g fill="none" stroke="#c2542b">
+    <rect x="18" y="18" width="364" height="564" stroke-width="2" stroke-opacity="0.7"/>
+    <rect x="26" y="26" width="348" height="548" stroke-width="0.8" stroke-opacity="0.4"/>
+  </g>
+  <text x="200" y="470" text-anchor="middle" font-family="Georgia, serif" font-size="13" letter-spacing="6" fill="#e2703a">THE</text>
+  <text x="200" y="510" text-anchor="middle" font-family="Georgia, serif" font-size="31" letter-spacing="1" fill="#f5efe0" font-weight="bold">INDESTRUCTIBLE</text>
+  <text x="200" y="548" text-anchor="middle" font-family="Georgia, serif" font-size="36" letter-spacing="12" fill="#c2542b" font-weight="bold">MAN</text>
+  <text x="200" y="572" text-anchor="middle" font-family="Georgia, serif" font-size="10" letter-spacing="4" fill="#f5efe0" opacity="0.5">LON CHANEY JR. • 1956</text>
+  <rect width="400" height="600" fill="url(#vig)"/>
+  <rect width="400" height="600" filter="url(#grain)"/>
+</svg>
